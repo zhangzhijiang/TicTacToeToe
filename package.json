@@ -1,0 +1,38 @@
+{
+  "name": "tictactoetoe-(four-tops)",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:android": "vite build --mode android",
+    "preview": "vite preview",
+    "clean": "rmdir /s /q dist 2>nul & cd android && gradlew.bat clean && cd ..",
+    "clean:all": "rmdir /s /q dist 2>nul & cd android && gradlew.bat clean && rmdir /s /q android\\app\\build 2>nul && cd ..",
+    "android:sync": "npm run build:android && npx cap sync android",
+    "android:build": "npm run android:sync && cd android && gradlew.bat bundleRelease",
+    "android:build:debug": "npm run android:sync && cd android && gradlew.bat bundleDebug",
+    "android:clean:build": "npm run clean:all && npm run android:build",
+    "android:dev": "npm run android:sync && cd android && gradlew.bat installDebug",
+    "android:run": "npm run android:sync && npx cap run android",
+    "android:open": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.23.24",
+    "lucide-react": "^0.555.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
