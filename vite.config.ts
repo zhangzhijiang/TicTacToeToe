@@ -4,9 +4,9 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
-    // Use '/tictactoetoe/' for GitHub Pages web deployment, '/' for Android/iOS builds
+    // Use '/tttt/' for web deployment at https://www.idatagear.com/tttt
     // When mode is 'android', use '/' base path
-    const base = mode === 'android' ? '/' : '/tictactoetoe/';
+    const base = mode === 'android' ? '/' : '/tttt/';
     
     return {
       base,

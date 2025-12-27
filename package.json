@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "build:android": "vite build --mode android",
-    "preview": "vite preview",
+    "dev": "npx vite",
+    "build": "npx vite build",
+    "build:android": "npx vite build --mode android",
+    "preview": "npx vite preview",
     "clean": "rmdir /s /q dist 2>nul & cd android && gradlew.bat clean && cd ..",
     "clean:all": "rmdir /s /q dist 2>nul & cd android && gradlew.bat clean && rmdir /s /q android\\app\\build 2>nul && cd ..",
     "android:sync": "npm run build:android && npx cap sync android",
@@ -19,6 +19,7 @@
     "android:open": "npx cap open android"
   },
   "dependencies": {
+    "@capacitor-community/admob": "^7.2.0",
     "@capacitor/android": "^7.4.4",
     "@capacitor/cli": "^7.4.4",
     "@capacitor/core": "^7.4.4",
@@ -31,7 +32,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^5.1.2",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }

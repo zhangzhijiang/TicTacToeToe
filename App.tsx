@@ -17,6 +17,9 @@ import {
 } from './services/gameLogic';
 import Board from './components/Board';
 import AdSense from './components/AdSense';
+import AdMobBanner from './components/AdMob';
+import { Capacitor } from '@capacitor/core';
+import { preloadInterstitial, showInterstitial } from './utils/adMobInterstitial';
 import { 
   RefreshCw, 
   Undo2, 
@@ -45,6 +48,14 @@ const App: React.FC = () => {
 
   // Stats
   const [pieceCounts, setPieceCounts] = useState<{A: number, B: number}>({ A: 4, B: 4 });
+  const gameCountRef = useRef<number>(0); // Track number of games played
+
+  // Initialize AdMob and preload interstitial on app start
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      preloadInterstitial().catch(console.error);
+    }
+  }, []);
 
   // Update piece counts whenever board changes
   useEffect(() => {
@@ -62,6 +73,18 @@ const App: React.FC = () => {
       else if (b < 2) setWinner('A');
     }
   }, [board, winner]);
+
+  // Show interstitial ad when game ends
+  useEffect(() => {
+    if (winner && Capacitor.isNativePlatform()) {
+      // Small delay to let winner modal show first, then show ad
+      const timer = setTimeout(() => {
+        showInterstitial().catch(console.error);
+      }, 1500); // 1.5 second delay after winner is determined
+      
+      return () => clearTimeout(timer);
+    }
+  }, [winner]);
 
   // AI Turn Logic
   useEffect(() => {
@@ -137,6 +160,18 @@ const App: React.FC = () => {
     setLastMove(null);
     setSelectedPos(null);
     setValidMoves([]);
+    
+    // Increment game count
+    gameCountRef.current += 1;
+    
+    // Show interstitial every 3 games (optional - you can adjust this frequency)
+    // This is in addition to showing after game ends
+    if (Capacitor.isNativePlatform() && gameCountRef.current > 0 && gameCountRef.current % 3 === 0) {
+      // Small delay to let game reset first
+      setTimeout(() => {
+        showInterstitial().catch(console.error);
+      }, 500);
+    }
   };
 
   const undoMove = () => {
@@ -169,6 +204,16 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen max-h-screen bg-slate-900 flex flex-col items-center justify-start px-2 sm:px-4 relative overflow-hidden">
+      
+      {/* AdMob Banner - Top (Mobile only) */}
+      {Capacitor.isNativePlatform() && (
+        <div className="w-full z-50">
+          <AdMobBanner 
+            adUnitId="ca-app-pub-8396981938969998/8850377981"
+            position="top"
+          />
+        </div>
+      )}
       
       {/* Background Ambience */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -260,17 +305,19 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Right: AdSense Ad - Only on desktop, doesn't interfere with board */}
-        <div className="hidden lg:flex w-48 xl:w-64 flex-shrink-0 justify-center items-start pt-8">
-          <div className="w-full">
-            <AdSense 
-              adSlot="9296977491"
-              adFormat="auto"
-              fullWidthResponsive={true}
-              className="min-h-[250px]"
-            />
+        {/* Right: AdSense Ad - Only on desktop web, doesn't interfere with board */}
+        {!Capacitor.isNativePlatform() && (
+          <div className="hidden lg:flex w-48 xl:w-64 flex-shrink-0 justify-center items-start pt-8">
+            <div className="w-full">
+              <AdSense 
+                adSlot="9296977491"
+                adFormat="auto"
+                fullWidthResponsive={true}
+                className="min-h-[250px]"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Rules Modal */}
@@ -348,6 +395,16 @@ const App: React.FC = () => {
               Play Again
             </button>
           </div>
+        </div>
+      )}
+
+      {/* AdMob Banner - Bottom (Mobile only) */}
+      {Capacitor.isNativePlatform() && (
+        <div className="w-full z-50">
+          <AdMobBanner 
+            adUnitId="ca-app-pub-8396981938969998/8850377981"
+            position="bottom"
+          />
         </div>
       )}
 
